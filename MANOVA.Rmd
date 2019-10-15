@@ -1,0 +1,55 @@
+---
+title: "MANOVA"
+author: "Amira Ibrahim"
+date: "October 15, 2019"
+output: html_document
+---
+#attach data:
+```{r skulls, echo=TRUE}
+Skull_data <- read.csv(file.choose(),header = T)
+attach(Skull_data)
+names(Skull_data)
+```
+
+#check normality :
+```{r , echo=TRUE}
+library(moments)
+skewness(Skull_data[,3:6])
+```
+accepted range from -1 to +1
+```{r , echo=TRUE}
+kurtosis(Skull_data[,3:6])
+```
+accepted range from -2 to +2 , may to +3
+```{r , echo=TRUE}
+boxplot(Skull_data[,3:6],main= "Diff. in Skull dimensions")
+```
+data is normally distributed
+
+```{r , echo=TRUE}
+boxplot(mb~epoch,main="Diff. in mb by years",xlab = "Years")
+```
+```{r , echo=TRUE}
+boxplot(bl~epoch,main="Diff. in bl by years",xlab = "Years")
+```
+```{r , echo=TRUE}
+boxplot(bh~epoch,main="Diff. in bh by years",xlab = "Years")
+```
+```{r , echo=TRUE}
+boxplot(nh~epoch,main="Diff. in nh by years",xlab = "Years")
+```
+
+#test : H0 : diffrence in mean is the same in all years:
+```{r , echo=TRUE}
+MANOVA1 <- manova(formula=(cbind(mb,bh,bl,nh))~as.factor(epoch) , data=Skull_data)
+summary(MANOVA1)
+```
+p-value < 0.05 , reject H0 , Skull dimensions differ by years
+
+#to know which is affected separetly :
+```{r , echo=TRUE}
+summary.aov(MANOVA1)
+```
+#mb & bl are highly significant
+#bh is marginally significant
+#nh is not significant
